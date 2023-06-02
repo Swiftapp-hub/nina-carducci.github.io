@@ -114,13 +114,13 @@
     openLightBox(element, lightboxId) {
       $(`#${lightboxId}`)
         .find(".lightboxImage")
-        .attr("src", element.attr("src"));
+        .attr("src", element.data("src-original"));
       $(`#${lightboxId}`).modal("toggle");
     },
     nextImage(isPrevious) {
       let activeImage = null;
       $("img.gallery-item").each(function() {
-        if ($(this).attr("src") === $(".lightboxImage").attr("src")) {
+        if ($(this).data("src-original") === $(".lightboxImage").attr("src")) {
           activeImage = $(this);
         }
       });
@@ -143,16 +143,21 @@
           }
         });
       }
-      let index = 0,
-        next = null;
+      let index = 0, next = null;
 
       $(imagesCollection).each(function(i) {
-        if ($(activeImage).attr("src") === $(this).attr("src")) {
+        if ($(activeImage).data("src-original") === $(this).data("src-original")) {
           index = i;
         }
       });
-      next = imagesCollection[index + (isPrevious ? -1 : 1)] || imagesCollection[0];
-      $(".lightboxImage").attr("src", $(next).attr("src"));
+
+      if (isPrevious) {
+          next = imagesCollection[index - 1] || imagesCollection[imagesCollection.length - 1];
+      } else {
+          next = imagesCollection[index + 1] || imagesCollection[0];
+      }
+      $(".lightboxImage").attr("src", $(next).data("src-original"));
+      console.log("updated");
     },
     createLightBox(gallery, lightboxId, navigation) {
       gallery.append(`<div class="modal fade" id="${
